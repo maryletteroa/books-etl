@@ -7,44 +7,35 @@ db = "../data/books.duckdb"
 if os.path.exists(db):
     os.remove(db)
 
-# get raw data from Open Library Archive
-with duckdb.connect(db) as con:
 
-    con.execute("set memory_limit='4GB'")
+def get_data(full: bool = False):
+    with duckdb.connect(db) as con:
 
-    # print("downloading author")
-    con.execute(
-        """
-        CREATE OR REPLACE TABLE raw_author AS
-        SELECT *
-        FROM read_csv_auto('../data/archive/ol_dump_authors_2025-12-31.txt');
-        """
-    )
-    print("downloading ratings")
-    con.execute(
-        """
-        CREATE OR REPLACE TABLE raw_rating AS
-        SELECT *
-        FROM read_csv_auto('../data/archive/ol_dump_ratings_2025-12-31.txt');
-        """
-    )
-    print("downloading works")
-    con.execute(
-        """
-        CREATE OR REPLACE TABLE raw_work AS
-        SELECT *
-        FROM read_csv_auto('../data/archive/ol_dump_works_2025-12-31.txt')
-        USING SAMPLE 0.01;
-        """
-    )
+        con.execute("set memory_limit='4GB'")
+        con.execute("create schema if not exists raw")
+
+        for record in ["author", "rating", "work"]:
+            print(f"downloading {record}")
+            if full:
+                source_path = f"../data/dump/ol_dump_{record}_2025-12-31.txt"
+            else:
+                source_path = f"../data/sample/{record}.tsv"
+            con.execute(
+                f"""
+                CREATE OR REPLACE TABLE raw.{record} AS
+                SELECT *
+                FROM read_csv_auto('{source_path}');
+                """
+            )
 
 
-# create or replace table author as
-# select str_split((column4) ->> 'key','/')[-1] as id,
-# (column4) ->> 'birth_date' as birth_date,
-# (column4) ->> 'name' as name,
-# (column4) ->> 'title' as title,
-# case when json_extract(column4, '$.bio.value') is not null then (column4) ->> 'bio' ->> 'value' else (column4) ->> 'bio' end  as bio,
-# CAST((column4) ->> 'created' ->> 'value' AS TIMESTAMP) as created,
-# CAST((column4) ->> 'last_modified' ->> 'value' AS TIMESTAMP) as last_modified
-# from raw_author;
+def get_sample_data():
+    # random works id
+    # get author information
+    # create keys
+    #
+    pass
+
+
+if __name__ == "__main__":
+    get_data(full=False)
