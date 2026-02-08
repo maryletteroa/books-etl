@@ -1,0 +1,82 @@
+version: 2
+
+sources:
+  - name: books
+    schema: raw
+    tables:
+      - name: author
+      - name: rating
+      - name: work
+
+models:
+  - name: author
+    description: "Staging table for author data."
+    columns:
+      - name: id
+        description: "Unique author id."
+        tests:
+          - unique
+          - not_null
+      - name: birth_date
+        description: "Birth date of author"   
+      - name: name
+        description: "Name of author."
+        tests:
+          - not_null
+      - name: title
+        description: "Title of author."
+      - name: bio
+        description: "Bio."
+      - name: created
+        description: "Date the entry was created."
+      - name: last_modified
+        description: "Date the entry was last modified."
+        tests:
+          - not_null
+
+  - name: rating
+    description: "Staging table for rating data."
+    columns:
+      - name: work_id
+        description: "Work ID."
+        tests:
+          - unique
+          - not_null
+      - name: book_id
+        description: "Book ID."
+        tests:
+          - unique
+      - name: rating
+        description: "Rating."
+        tests:
+          - not_null
+      - name: date
+        description: "Date of rating."
+        tests:
+          - not_null
+
+  - name: work
+    description: "Staging table for work data."
+    columns:
+      - name: id
+        description: "Unique work id"
+        tests:
+          - not_null
+      - name: title
+        description: "Title of the work"
+        tests:
+          - not_null
+      - name: description
+        description: "Description"
+      - name: author
+        description: "Date of rating."
+        tests:
+          - not_null
+      - name: created
+        description: "Date the entry was created."
+        test:
+          - not_null
+      - name: last_modified
+        description: "Date the entry was last modified."
+        tests:
+          - not_null
