@@ -1,41 +1,105 @@
+import asyncio
+import json
 import os
+import time
+from typing import Literal
 
+import aiohttp
 import duckdb
 
-db = "../data/books.duckdb"
 
-if os.path.exists(db):
-    os.remove(db)
+async def fetch(session, url):
+    async with session.get(url) as response:
+        return await response.json()
 
 
-def get_data(full: bool = False):
-    with duckdb.connect(db) as con:
+async def load_data(
+    con: duckdb.connect, endpt: Literal["work", "author", "rating"], ids: list
+):
+    base_url = {
+        "work": "https://openlibrary.org/works/id.json",
+        "author": "https://openlibrary.org/authors/id.json",
+        "rating": "https://openlibrary.org/works/id/ratings.json",
+    }
+    urls = [base_url[endpt].replace("id", id) for id in ids]
+
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch(session, url) for url in urls]
+        results = await asyncio.gather(*tasks)
+
+    for result in results:
+        status = result.get("status")
+        message = result.get("message")
+        if status:
+            raise Exception(message)
+        con.execute(f"insert into raw.{endpt} values(json(?))", [json.dumps(result)])
+
+
+def sample_works(duckdb_path: str):
+    with duckdb.connect(duckdb_path) as con:
 
         con.execute("set memory_limit='4GB'")
         con.execute("create schema if not exists raw")
 
-        for record in ["author", "rating", "work"]:
-            print(f"downloading {record}")
-            if full:
-                source_path = f"../data/dump/ol_dump_{record}_2025-12-31.txt"
-            else:
-                source_path = f"../data/sample/{record}.tsv"
-            con.execute(
-                f"""
-                CREATE OR REPLACE TABLE raw.{record} AS
-                SELECT *
-                FROM read_csv_auto('{source_path}');
-                """
-            )
+        source_path = "../data/dump/ol_dump_work_2025-12-31.txt"
+        con.execute(
+            f"""
+            CREATE OR REPLACE TABLE raw.work AS
+            SELECT *
+            FROM read_csv_auto('{source_path}')
+            using sample reservoir(500 rows)
+            repeatable (42);
+            """
+        )
 
 
-def get_sample_data():
-    # random works id
-    # get author information
-    # create keys
-    #
-    pass
+def get_ids(duckdb_path: str):
+    with duckdb.connect(duckdb_path) as con:
+
+        ids = con.execute(
+            """
+                select
+                    str_split((column4) ->> 'key','/')[-1] as work_id,
+                    str_split((value) ->> 'author' ->> 'key', '/')[-1] as author_id
+                from raw.work, json_each(json_extract(column4, '$.authors'))
+            """
+        ).fetchall()
+
+        work_ids = [w for w in set([row[0] for row in ids])]
+        author_ids = [w for w in set([row[1] for row in ids])]
+
+        return work_ids, author_ids
 
 
+def batch_load(con: duckdb.connect, endpt: Literal["author", "rating"], ids: list):
+    with duckdb.connect(duckdb_path) as con:
+        con.execute("set memory_limit='4GB'")
+        con.execute(f"create or replace table raw.{endpt} (data json)")
+        nbatch = 10
+        ids_batch = [ids[i : i + nbatch] for i in range(0, len(ids), nbatch)]
+        ntotal_batch = len(ids_batch)
+        for i, ib in enumerate(ids_batch, start=1):
+            print(f"{i}/{ntotal_batch} ({nbatch * i} rows)", end="\r")
+            asyncio.run(load_data(con=con, endpt=endpt, ids=ib))
+
+
+# To run the function
 if __name__ == "__main__":
-    get_data(full=False)
+
+    duckdb_path = "../data/books.duckdb"
+    # if os.path.exists(db):
+    #     os.remove(db)
+
+    start = time.perf_counter()
+
+    # print("sampling works...")
+    # sample_works()
+    work_ids, author_ids = get_ids(duckdb_path=duckdb_path)
+
+    with duckdb.connect(duckdb_path) as con:
+        # batch_load(con=con, endpt="author", ids=author_ids)
+        batch_load(con=con, endpt="rating", ids=work_ids)
+
+    end = time.perf_counter()
+    elapsed = end - start
+    print(f"time taken: {elapsed / 60:2f} minutes, {elapsed % 60:2f} seconds.")
