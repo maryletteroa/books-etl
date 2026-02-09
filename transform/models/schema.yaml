@@ -21,8 +21,6 @@ models:
         description: "Birth date of author"   
       - name: name
         description: "Name of author."
-        tests:
-          - not_null
       - name: title
         description: "Title of author."
       - name: bio
@@ -37,21 +35,30 @@ models:
   - name: rating
     description: "Staging table for rating data."
     columns:
-      - name: work_id
-        description: "Work ID."
-        tests:
-          - unique
-          - not_null
-      - name: book_id
-        description: "Book ID."
-        tests:
-          - unique
-      - name: rating
-        description: "Rating."
+      - name: average
+        description: "Average"
+      - name: count
+        description: "Count"
         tests:
           - not_null
-      - name: date
-        description: "Date of rating."
+      - name: rating_1
+        description: "Rating 1"
+        tests:
+          - not_null
+      - name: rating_2
+        description: "Rating 2"
+        tests:
+          - not_null
+      - name: rating_3
+        description: "Rating 3"
+        tests:
+          - not_null
+      - name: rating_4
+        description: "Rating 4"
+        tests:
+          - not_null
+      - name: rating_5
+        description: "Rating 5"
         tests:
           - not_null
 
@@ -68,15 +75,23 @@ models:
           - not_null
       - name: description
         description: "Description"
-      - name: author
-        description: "Date of rating."
-        tests:
-          - not_null
       - name: created
         description: "Date the entry was created."
-        test:
+        tests:
           - not_null
       - name: last_modified
         description: "Date the entry was last modified."
+        tests:
+          - not_null
+
+  - name: work_author
+    description: "Bridge table between author and work"
+    columns:
+      - name: work_id
+        description: "Work ID"
+        tests:
+          - not_null
+      - name: author_id
+        description: "Author ID"
         tests:
           - not_null
