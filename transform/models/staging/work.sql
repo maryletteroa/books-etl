@@ -1,6 +1,9 @@
-select str_split((column4) ->> 'key','/')[-1] as id,
-    (column4) ->> 'title' as title,
-    (column4) ->> 'description' ->> 'value' as description,
-    CAST((column4) ->> 'created' ->> 'value' AS TIMESTAMP) as created,
-    CAST((column4) ->> 'last_modified' ->> 'value' AS TIMESTAMP) as last_modified
-from {{source('books', 'work') }}
+select str_split((data) ->> 'key','/')[-1] as id,
+    (data) ->> 'title' as title,
+    case when json_extract(data, '$.description.value') is not null
+        then data ->> 'description' ->> 'value'
+        else data ->> 'description' end as description,
+    CAST((data) ->> 'created' ->> 'value' AS TIMESTAMP) as created,
+    CAST((data) ->> 'last_modified' ->> 'value' AS TIMESTAMP) as last_modified
+from {{source('raw', 'work') }}
+where (data) ->> 'title' is not null
