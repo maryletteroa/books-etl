@@ -1,11 +1,22 @@
 version: 2
 
 sources:
-  - name: books
+  - name: raw
     schema: raw
     tables:
       - name: author
       - name: rating
+      - name: work
+  - name: stg
+    schema: stg
+    tables:
+      - name: author
+      - name: rating
+      - name: subject_people
+      - name: subject_place
+      - name: subject_time
+      - name: subject
+      - name: work_author
       - name: work
 
 models:
@@ -35,6 +46,10 @@ models:
   - name: rating
     description: "Staging table for rating data."
     columns:
+      - name: work_id
+        description: "Work ID"
+        tests:
+          - not_null
       - name: average
         description: "Average"
       - name: count
@@ -93,5 +108,53 @@ models:
           - not_null
       - name: author_id
         description: "Author ID"
+        tests:
+          - not_null
+
+  - name: subject_place
+    description: "Subject places"
+    columns:
+      - name: work_id
+        description: "Work ID"
+        tests:
+          - not_null
+      - name: subject_place
+        description: "Subject place"
+        tests:
+          - not_null
+
+  - name: subject
+    description: "Subject"
+    columns:
+      - name: work_id
+        description: "Work ID"
+        tests:
+          - not_null
+      - name: subject
+        description: "Subject"
+        tests:
+          - not_null
+
+  - name: subject_time
+    description: "Subject time"
+    columns:
+      - name: work_id
+        description: "Work ID"
+        tests:
+          - not_null
+      - name: subject_time
+        description: "Subject time"
+        tests:
+          - not_null
+
+  - name: subject_people
+    description: "Subject people"
+    columns:
+      - name: work_id
+        description: "Work ID"
+        tests:
+          - not_null
+      - name: subject_people
+        description: "Subject people"
         tests:
           - not_null
