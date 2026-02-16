@@ -1,4 +1,4 @@
 select subject, count(*) as count
-from {{source('stg', 'subject') }}
+from {{ref('subject') }}
 group by subject
 order by count(*) desc

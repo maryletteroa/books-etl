@@ -1,24 +1,5 @@
 version: 2
 
-sources:
-  - name: raw
-    schema: raw
-    tables:
-      - name: author
-      - name: rating
-      - name: work
-  - name: stg
-    schema: stg
-    tables:
-      - name: author
-      - name: rating
-      - name: subject_people
-      - name: subject_place
-      - name: subject_time
-      - name: subject
-      - name: work_author
-      - name: work
-
 models:
   - name: author
     description: "Staging table for author data."

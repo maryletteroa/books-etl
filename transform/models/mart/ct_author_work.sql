@@ -1,6 +1,6 @@
 select a."name" 
     , count(*) as count
-from {{source('stg', 'work') }} w
+from {{ref('work') }} w
 left join stg.work_author wa 
     on w.id = wa.work_id 
 left join stg.author a 
