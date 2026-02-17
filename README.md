@@ -9,7 +9,7 @@ This is a simple implementation of a local modern data stack using the following
 
 
 # Run
-Use the Make file to run the commands. Dependencies uses `uv`
+Use the Makefile to run the commands. Dependencies uses `uv`
 
 1. Install [`uv`](https://github.com/astral-sh/uv) Python package manager.
 2. Install dependencies, and create a virtual environment:
