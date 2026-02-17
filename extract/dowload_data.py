@@ -59,7 +59,7 @@ async def load_data(
 #         )
 
 
-def sample_rating(duckdb_path: str, nsamples: int, random: bool = False):
+def sample_rating(duckdb_path: str, nsamples: int, random: bool):
     with duckdb.connect(duckdb_path) as con:
 
         con.execute("set memory_limit='4GB'")
@@ -74,9 +74,13 @@ def sample_rating(duckdb_path: str, nsamples: int, random: bool = False):
             using sample reservoir({nsamples} rows)
             """
 
+        print(f"   sampling {nsamples} rows")
+
         if random:
+            print("   random sampling")
             con.execute(query)
         else:
+            print("   not random sampling")
             con.execute(query + "repeatable (42)")
 
 

@@ -2,7 +2,7 @@ transform:
   outputs:
     dev:
       type: duckdb
-      path: /Users/maryletteroa/Documents/Projects/DE/books/data/books.duckdb
+      path: ../data/books.duckdb
       threads: 1
 
     prod:

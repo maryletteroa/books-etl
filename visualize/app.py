@@ -5,7 +5,7 @@ st.set_page_config(page_title="Books", layout="wide")
 st.title("Books")
 
 st.header("Top Subjects")
-with duckdb.connect("../../data/books.duckdb") as conn:
+with duckdb.connect("../data/books.duckdb") as conn:
 
     # Query returns a DuckDB relation
     result = conn.execute(
