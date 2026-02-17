@@ -17,7 +17,7 @@ help:
 install:
 	uv sync
 
-data:
+download:
 ifeq ($(random),true)
 	source .venv/bin/activate &&  python extract --random --nsample ${nsample}
 else
