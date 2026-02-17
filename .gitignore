@@ -6,6 +6,7 @@ dist/
 wheels/
 *.egg-info
 notes.txt
+schedule/.tmp_*
 
 # Virtual environments
 .venv
