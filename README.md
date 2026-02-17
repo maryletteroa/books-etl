@@ -20,7 +20,7 @@ make install
 ```sh
 make download nsample=<number of rows to sample> random=<true/false>
 ```
-4. Transform data and check quality
+4. Transform data and check quality. As Dagster can materialize the tables using the dependency tree from dbt, this step is optional. Instead, run the job from Dagster to materialize the tables
 ```sh
 make dbt
 ```
