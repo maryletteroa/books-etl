@@ -8,6 +8,7 @@ help:
 	@echo ""
 	@echo "Available commands:"
 	@echo "  make install	- Install dependencies in a virtual environment"
+	@echo "  make data	- Download data, params nsample=int, random=true/false"
 	@echo "  make dbt	- Start dbt transform"
 	@echo "  make dagster	- Start Dagster dev server"
 	@echo "  make streamlit - Run Streamlit app"
