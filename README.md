@@ -1,3 +1,3 @@
 An ETL project using books data
 
-duckdb + dbt + dagster
+duckdb + dbt + dagster + streamlit
