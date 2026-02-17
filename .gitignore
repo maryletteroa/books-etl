@@ -8,6 +8,7 @@ wheels/
 notes.txt
 schedule/.tmp_*
 data/books.duckdb
+data/books.duckdb.wal
 
 # Virtual environments
 .venv
