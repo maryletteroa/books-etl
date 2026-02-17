@@ -16,6 +16,18 @@ help:
 install:
 	uv sync
 
+data:
+ifeq ($(random),true)
+	source .venv/bin/activate &&  python extract --random --nsample ${nsample}
+else
+ifeq ($(random),false)
+	source .venv/bin/activate &&  python extract --nsample ${nsample}
+else
+	$(error Accepted value for random: true or false only)
+endif
+endif
+
+
 dbt:
 	source .venv/bin/activate && cd transform && dbt run
 
