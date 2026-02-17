@@ -11,4 +11,5 @@ dependencies = [
     "dbt-core>=1.11.3",
     "dbt-duckdb>=1.10.0",
     "duckdb>=1.4.4",
+    "streamlit>=1.54.0",
 ]
